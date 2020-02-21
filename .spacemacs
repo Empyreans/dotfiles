@@ -37,6 +37,7 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
+     (python :variables python-backend 'anaconda)
      helm
      ;; better-defaults
      themes-megapack
@@ -49,7 +50,6 @@ values."
      haskell
      syntax-checking
      auto-completion
-     ipython-notebook
      deft
      git
      version-control
@@ -358,6 +358,11 @@ you should place your code here."
   (setq org-journal-file-format "%Y-%m-%d.org")
   (setq org-journal-date-prefix "#+TITLE: ")
   (setq org-journal-date-format "%A, %d %B %Y")
+
+  ; for live py to work, anaconda steals the environment!
+  (setq live-py-version "python3.5")
+
+  (setq org-journal-date-format "%d %B %Y")
 
   ; hledger-mode
   ; TODO: nutzbar machen, company backends
