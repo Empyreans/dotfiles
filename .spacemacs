@@ -39,6 +39,7 @@ values."
      ;; ----------------------------------------------------------------
      (python :variables python-backend 'anaconda)
      helm
+     racket
      ;; better-defaults
      themes-megapack
      emacs-lisp
@@ -360,15 +361,21 @@ you should place your code here."
   (setq org-journal-date-format "%A, %d %B %Y")
 
   ; for live py to work, anaconda steals the environment!
+  ; packages also have to be installed with pip3 instead of pip
   (setq live-py-version "python3.5")
 
+  ; formatting for org journal
   (setq org-journal-date-format "%d %B %Y")
 
+  ; want to manually enter break
+  (setq org-pomodoro-manual-break t)
+  (setq org-pomodoro-clock-break t)
+
   ; hledger-mode
-  ; TODO: nutzbar machen, company backends
   (setq hledger-jfile "~/Nextcloud2/masterplan/.hledger.journal")
   ; auto completion for accoutn names
   (add-to-list 'spacemacs-default-company-backends 'hledger-company) ; needed to change from 'company-backends
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
