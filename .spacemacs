@@ -30,36 +30,30 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(csv
+   '(
+     ;; languages
+     lsp ;; TODO eventuell Kompatibilitätsprobleme
      sql
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
-     (python :variables python-backend 'anaconda)
-     helm
+     java
      racket
-     ;; better-defaults
-     themes-megapack
      emacs-lisp
-     git
-     markdown
+     haskell
+     (python :variables python-backend 'anaconda)
+     ;; language assistance
+     auto-completion
+     syntax-checking
+     ;; emacs assistance
+     helm
+     deft
      (org :variables org-enable-org-journal-support t)
+     ;; formats
+     csv
+     markdown
      epub
      pdf
-     haskell
-     syntax-checking
-     auto-completion
-     deft
-     git
+     ;; version control
      version-control
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
-     ;; spell-checking
-     ;; syntax-checking
-     ;; version-control
+     git
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -320,6 +314,8 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;(defvar home)
+
   ; daemon
   (server-start)
 
@@ -332,11 +328,10 @@ you should place your code here."
 
   ; org roam
   (use-package org-roam
+    :after org
     :load-path "/home/empyreans/.emacs.d/elisp/org-roam/"
     :hook
-    ((org-mode . org-roam-mode)
-     (after-init . org-roam--build-cache-async) ;; optional!
-     )
+    (after-init . org-roam-mode)
     :custom
     (org-roam-directory "~/Nextcloud2/masterplan/brain/")
     :bind (:map org-roam-mode-map
