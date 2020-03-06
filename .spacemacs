@@ -389,7 +389,9 @@ you should place your code here."
         ledger-report-links-in-register nil
         ledger-binary-path "hledger")
 
-  ; custom functions
+  (ledger-reports-add "monthly expenses" "%(binary) -f %(ledger-file) balance expenses --tree --no-total --row-total --average --monthly")
+
+  ; CUSTOM FUNCTIONS
   (defun narrow-or-widen-dwim ()
     "If the buffer is narrowed, it widens. Otherwise, it narrows to region, or Org subtree."
     (interactive)
