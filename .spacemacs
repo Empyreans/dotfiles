@@ -55,6 +55,7 @@ values."
      epub
      pdf
      yaml
+     finance
      ;; version control
      version-control
      git
@@ -63,7 +64,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(beacon org-sidebar hledger-mode drag-stuff modus-operandi-theme modus-vivendi-theme cdlatex)
+   dotspacemacs-additional-packages '(beacon org-sidebar drag-stuff cdlatex dash dired-hacks-utils dired-subtree dired-collapse dired-narrow)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -318,18 +319,25 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  ;(defvar home)
+  ; STARTUP AND HOOKS ;
+  (beacon-mode 1)
+  (add-hook 'dired-mode-hook 'dired-collapse-mode)
+  ;(server-start) TODO nutzen?
 
-  ; daemon
-  (server-start)
-
-  ; keybindings
+  ; KEYBINDINGS ;
+  ; drag
   (global-set-key (kbd "<M-down>") 'drag-stuff-down)
   (global-set-key (kbd "<M-up>") 'drag-stuff-up)
   (global-set-key (kbd "C-i") 'evil-jump-forward)
+  ; dired hacks
+  ; TODO local key map für mode so überschreiben, dass ich nicht vorher den major mode prefix (,) tätigen muss
+  (spacemacs/set-leader-keys-for-major-mode 'dired-mode "TAB" 'dired-subtree-toggle)
+  (spacemacs/set-leader-keys-for-major-mode 'dired-mode "u" 'dired-subtree-up)
+  (spacemacs/set-leader-keys-for-major-mode 'dired-mode "n" 'dired-narrow-fuzzy)
+  ; narrow widen
+  (spacemacs/set-leader-keys "nn" 'narrow-or-widen-dwim)
 
-  (beacon-mode 1)
-
+  ; PACKAGE CONFIGURATION
   ; org roam
   (use-package org-roam
     ;:after org
@@ -371,11 +379,26 @@ you should place your code here."
   (setq org-pomodoro-clock-break t)
 
   ; hledger-mode
-  (setq hledger-jfile "~/Nextcloud2/masterplan/.hledger.journal")
+  ;(setq hledger-jfile "~/Nextcloud2/masterplan/.hledger.journal")
   ; auto completion for accoutn names
-  (add-to-list 'spacemacs-default-company-backends 'hledger-company) ; needed to change from 'company-backends
+  ;(add-to-list 'spacemacs-default-company-backends 'hledger-company) ; needed to change from 'company-backends
 
-  )
+  ; ledger-mode
+  ;; Required to use hledger instead of ledger itself.
+  (setq ledger-mode-should-check-version nil
+        ledger-report-links-in-register nil
+        ledger-binary-path "hledger")
+
+  ; custom functions
+  (defun narrow-or-widen-dwim ()
+    "If the buffer is narrowed, it widens. Otherwise, it narrows to region, or Org subtree."
+    (interactive)
+    (cond ((buffer-narrowed-p) (widen))
+          ((region-active-p) (narrow-to-region (region-beginning) (region-end)))
+          ((equal major-mode 'org-mode) (org-narrow-to-subtree))
+          (t (error "Please select a region to narrow to"))))
+
+)
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
