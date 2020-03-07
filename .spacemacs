@@ -378,18 +378,21 @@ you should place your code here."
   (setq org-pomodoro-manual-break t)
   (setq org-pomodoro-clock-break t)
 
-  ; hledger-mode
+  ; hledger-mode TODO DEPRECATED
   ;(setq hledger-jfile "~/Nextcloud2/masterplan/.hledger.journal")
   ; auto completion for accoutn names
   ;(add-to-list 'spacemacs-default-company-backends 'hledger-company) ; needed to change from 'company-backends
 
   ; ledger-mode
-  ;; Required to use hledger instead of ledger itself.
+  ; Required to use hledger instead of ledger itself.
+  ; https://github.com/simonmichael/hledger/issues/367
   (setq ledger-mode-should-check-version nil
         ledger-report-links-in-register nil
+        ledger-report-auto-width nil
+        ledger-report-use-native-highlighting nil
         ledger-binary-path "hledger")
-
-  (ledger-reports-add "monthly expenses" "%(binary) -f %(ledger-file) balance expenses --tree --no-total --row-total --average --monthly")
+  ; automatically enter ledger-mode upon opening journal files
+  (add-to-list 'auto-mode-alist '("\\.journal$" . ledger-mode))
 
   ; CUSTOM FUNCTIONS
   (defun narrow-or-widen-dwim ()
@@ -471,6 +474,14 @@ This function is called at the very end of Spacemacs initialization."
    (quote
     ("d574db69fcc4cc241cb4a059711791fd537a959d8b75f038913639e8e006ca48" "575d772a465e51f9ba7dd9c6213275c7aa3dc68ede1692dcd1521e5d70a7f58d" "f3455b91943e9664af7998cc2c458cfc17e674b6443891f519266e5b3c51799d" default)))
  '(evil-want-Y-yank-to-eol nil)
+ '(ledger-reports
+   (quote
+    (("bal" "%(binary) -f %(ledger-file) bal")
+     ("reg" "%(binary) -f %(ledger-file) reg")
+     ("payee" "%(binary) -f %(ledger-file) reg @%(payee)")
+     ("account" "%(binary) -f %(ledger-file) reg %(account)")
+     ("monthly expenses" "%(binary) -f %(ledger-file) balance expenses --tree --no-total --row-total --average --monthly")
+     ("income statement" "%(binary) -f %(ledger-file) is -M"))))
  '(org-agenda-custom-commands
    (quote
     (("x" "Week"
