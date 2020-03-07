@@ -42,6 +42,7 @@ values."
      haskell
      (python :variables python-backend 'anaconda)
      latex
+     html
      ;; language assistance
      auto-completion
      syntax-checking
@@ -394,6 +395,8 @@ you should place your code here."
   ; automatically enter ledger-mode upon opening journal files
   (add-to-list 'auto-mode-alist '("\\.journal$" . ledger-mode))
 
+  ; AGENDA
+
   ; CUSTOM FUNCTIONS
   (defun narrow-or-widen-dwim ()
     "If the buffer is narrowed, it widens. Otherwise, it narrows to region, or Org subtree."
@@ -404,61 +407,6 @@ you should place your code here."
           (t (error "Please select a region to narrow to"))))
 
 )
-
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(evil-want-Y-yank-to-eol nil)
- '(org-agenda-custom-commands
-   (quote
-    (("x" "Week"
-      ((agenda ""
-               ((org-agenda-span
-                 (quote week)))))
-      nil nil)
-     ("c" "Day"
-      ((agenda ""
-               ((org-agenda-overriding-header "Schedule:")
-                (org-agenda-span
-                 (quote week))))
-       (todo "STARTED" nil)
-       (todo "NEXT"
-             ((org-agenda-overriding-header "Todays Tasks:")))
-       (todo "TODO" nil)
-       (todo "SOMEDAY" nil)
-       (todo "WAITING" nil))
-      nil nil))))
- '(org-agenda-files (quote ("~/Nextcloud2/masterplan/brain")))
- '(org-capture-templates
-   (quote
-    (("x" "Add TODO" entry
-      (file+headline "~/Dropbox/masterplan/planung.org" "Unsortiert")
-      (file "~/Dropbox/masterplan/org-templates/todo.txt"))
-     ("c" "Add NEXT" entry
-      (file+headline "~/Dropbox/masterplan/planung.org" "Unsortiert")
-      (file "~/Dropbox/masterplan/org-templates/next.txt"))
-     ("v" "Idee" entry
-      (file+headline "~/Dropbox/masterplan/planung.org" "Unsortiert")
-      (file "~/Dropbox/masterplan/org-templates/note.txt")))))
- '(org-log-into-drawer t)
- '(org-todo-keywords
-   (quote
-    ((sequence "TODO" "NEXT" "SOMEDAY" "WAITING" "STARTED" "DONE" "OPEN"))))
- '(package-selected-packages
-   (quote
-    (orgit magit-gitflow evil-magit magit magit-popup git-commit ghub treepy graphql with-editor zenburn-theme zen-and-art-theme ws-butler winum white-sand-theme which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme restart-emacs rebecca-theme rainbow-delimiters railscasts-theme purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el paradox organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme madhat2r-theme macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme elisp-slime-nav dumb-jump dracula-theme django-theme diminish define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme bracketed-paste birds-of-paradise-plus-theme badwolf-theme auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
-
 
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
@@ -498,6 +446,7 @@ This function is called at the very end of Spacemacs initialization."
        (todo "NEXT"
              ((org-agenda-overriding-header "Todays Tasks:")))
        (todo "TODO" nil)
+       (todo "OPEN" nil)
        (todo "SOMEDAY" nil)
        (todo "WAITING" nil))
       nil nil))))
