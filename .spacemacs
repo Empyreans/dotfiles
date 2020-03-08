@@ -31,6 +31,9 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     ;; version control
+     version-control
+     git
      ;; languages
      docker
      ruby
@@ -57,9 +60,6 @@ values."
      pdf
      yaml
      finance
-     ;; version control
-     version-control
-     git
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
