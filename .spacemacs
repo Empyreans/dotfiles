@@ -65,7 +65,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(beacon org-sidebar drag-stuff cdlatex dash dired-hacks-utils dired-subtree dired-collapse dired-narrow)
+   dotspacemacs-additional-packages '(beacon org-sidebar drag-stuff cdlatex dash dired-hacks-utils dired-subtree dired-collapse dired-narrow all-the-icons-dired)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -323,6 +323,7 @@ you should place your code here."
   ; STARTUP AND HOOKS ;
   (beacon-mode 1)
   (add-hook 'dired-mode-hook 'dired-collapse-mode)
+  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
   ;(server-start) TODO nutzen?
 
   ; KEYBINDINGS ;
