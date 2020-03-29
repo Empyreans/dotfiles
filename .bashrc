@@ -171,3 +171,11 @@ set -o vi
 # Install Ruby Gems to ~/gems
 export GEM_HOME="$HOME/gems"
 export PATH="$HOME/gems/bin:$PATH"
+
+export M2_HOME=/opt/maven
+export PATH=${M2_HOME}/bin:${PATH}
+
+export JAVA_HOME="/usr/lib/jvm/java-8-oracle"
+export JDK_HOME=${JAVA_HOME}
+export JRE_HOME=${JAVA_HOME}/jre
+export PATH=${JAVA_HOME}/bin:${PATH}
