@@ -2,6 +2,13 @@
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
+;; TODO
+;; Installation Instructions / external Dependencies:
+;; npm install -g javascript-typescript-langserver
+;; metals: https://scalameta.org/metals/docs/editors/emacs.html
+;; npm install -g @angular/language-service@next typescript  @angular/language-server
+;; phpcbf
+
 (defun dotspacemacs/layers ()
   "Configuration Layers declaration.
 You should not put any user code in this function besides modifying the variable
@@ -30,14 +37,20 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(typescript
+   '(php
      ;; version control
      version-control
      git
      ;; languages
+     (scala :variables scala-backend 'scala-metals)
      docker
      ruby
+     lsp
      (java :variables java-backend 'lsp)
+     (javascript :variables javascript-backend 'lsp)
+     (typescript :variables
+                 typescript-linter 'eslint
+                 typescript-backend 'lsp)
      sql
      racket
      emacs-lisp
@@ -48,24 +61,26 @@ values."
      ;; language assistance
      auto-completion
      syntax-checking
+     dap
      ;; emacs assistance
      helm
      deft
      (org :variables org-enable-org-journal-support t)
      ;; formats
      org-roam
+     pdf
      csv
      markdown
      epub
-     pdf
      yaml
      finance
+     pandoc
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(beacon org-sidebar drag-stuff cdlatex dash dired-hacks-utils dired-subtree dired-collapse dired-narrow all-the-icons-dired)
+   dotspacemacs-additional-packages '(beacon org-sidebar drag-stuff cdlatex dash dired-hacks-utils dired-subtree dired-collapse dired-narrow all-the-icons-dired sqlformat)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -323,8 +338,10 @@ you should place your code here."
   ; STARTUP AND HOOKS ;
   (beacon-mode 1)
   (add-hook 'dired-mode-hook 'dired-collapse-mode)
-  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
-  ;(server-start) TODO nutzen?
+  ; (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+  (global-centered-cursor-mode 1)
+  ; ng2-mode
+  ; (with-eval-after-load 'typescript-mode (add-hook 'typescript-mode-hook #'lsp))
 
   ; KEYBINDINGS ;
   ; drag
@@ -339,7 +356,7 @@ you should place your code here."
   ; narrow widen
   (spacemacs/set-leader-keys "nn" 'narrow-or-widen-dwim)
 
-  ; PACKAGE CONFIGURATION
+  ; PACKAGE CONFIGURATION ;
   ; deft + org-roam
   (setq deft-directory "~/Nextcloud2/masterplan/brain/")
   (setq deft-extensions '("org"))
@@ -380,7 +397,31 @@ you should place your code here."
   ; automatically enter ledger-mode upon opening journal files
   (add-to-list 'auto-mode-alist '("\\.journal$" . ledger-mode))
 
-  ; AGENDA
+  ; JAVA ;
+  ; TODO DAP Java Eclipse Testrunner has to be manually downloaded and put into the directory
+  ; disable lsp java hover
+  (setq lsp-ui-doc-enable nil)
+  ; disable yellow sideline mode
+  (setq lsp-ui-sideline-mode nil)
+  ; itso formatter
+  (setq lsp-java-format-settings-url "/home/empyreans/Nextcloud2/masterplan/itso-eclipse-formatter-1.1.xml")
+  (setq lsp-java-format-settings-profile "ITSO Java Codestyle")
+  (setq dap-java-test-additional-args '("-n" "\".*(Test|IT|Creator).*\""))
+  (setq lsp-java-maven-download-sources t)
+
+
+  ; SCALA ;
+  (setq-default flycheck-scalastylerc "/home/empyreans/Nextcloud2/masterplan/.conf/scalastyle_config.xml")
+
+  ; SQL ;
+  (setq sqlformat-command 'pgformatter)
+  (setq sqlformat-args '("-s2" "-g"))
+
+  ; Helm Gradial ;
+  (setq helm-ag-use-agignore t)
+
+  ; PHP ;
+  (setq phpcbf-executable "/home/empyreans/.composer/vendor/squizlabs/php_codesniffer/bin/phpcbf")
 
   ; CUSTOM FUNCTIONS
   (defun narrow-or-widen-dwim ()
@@ -390,14 +431,6 @@ you should place your code here."
           ((region-active-p) (narrow-to-region (region-beginning) (region-end)))
           ((equal major-mode 'org-mode) (org-narrow-to-subtree))
           (t (error "Please select a region to narrow to"))))
-
-  ; disable lsp java hover
-  (setq lsp-ui-doc-enable nil)
-  ; disable yellow sideline mode
-  (setq lsp-ui-sideline-mode nil)
-  ; itso formatter
-  (setq lsp-java-format-settings-url "/home/empyreans/Nextcloud2/masterplan/itso-eclipse-formatter-1.1.xml")
-  (setq lsp-java-format-settings-profile "ITSO Java Codestyle")
 
 )
 
@@ -423,6 +456,9 @@ This function is called at the very end of Spacemacs initialization."
      ("account" "%(binary) -f %(ledger-file) reg %(account)")
      ("monthly expenses" "%(binary) -f %(ledger-file) balance expenses --tree --no-total --row-total --average --monthly")
      ("income statement" "%(binary) -f %(ledger-file) is -M"))))
+ '(lsp-clients-angular-language-server-command
+   (quote
+    ("node" "/usr/local/lib/node_modules/@angular/language-server" "--ngProbeLocations" "/usr/local/lib/node_modules" "--tsProbeLocations" "/usr/local/lib/node_modules" "--stdio")))
  '(org-agenda-custom-commands
    (quote
     (("x" "Week"
@@ -464,7 +500,8 @@ This function is called at the very end of Spacemacs initialization."
     ((sequence "TODO" "NEXT" "SOMEDAY" "WAITING" "STARTED" "OPEN" "DONE"))))
  '(package-selected-packages
    (quote
-    (tide typescript-mode import-js grizzl add-node-modules-path yaml-mode orgit magit-gitflow evil-magit magit magit-popup git-commit ghub treepy graphql with-editor zenburn-theme zen-and-art-theme ws-butler winum white-sand-theme which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme restart-emacs rebecca-theme rainbow-delimiters railscasts-theme purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el paradox organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme madhat2r-theme macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme elisp-slime-nav dumb-jump dracula-theme django-theme diminish define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme bracketed-paste birds-of-paradise-plus-theme badwolf-theme auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line))))
+    (phpunit phpcbf php-extras php-auto-yasnippets helm-gtags ggtags geben drupal-mode counsel-gtags counsel swiper ivy company-phpactor phpactor composer php-runtime company-php ac-php-core xcscope php-mode tide typescript-mode import-js grizzl add-node-modules-path yaml-mode orgit magit-gitflow evil-magit magit magit-popup git-commit ghub treepy graphql with-editor zenburn-theme zen-and-art-theme ws-butler winum white-sand-theme which-key volatile-highlights vi-tilde-fringe uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme restart-emacs rebecca-theme rainbow-delimiters railscasts-theme purple-haze-theme professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el paradox organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme madhat2r-theme macrostep lush-theme lorem-ipsum linum-relative link-hint light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme elisp-slime-nav dumb-jump dracula-theme django-theme diminish define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme bracketed-paste birds-of-paradise-plus-theme badwolf-theme auto-highlight-symbol auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line)))
+ '(pdf-annot-list-format (quote ((page . 3) (contents . 56)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
